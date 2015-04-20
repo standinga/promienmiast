@@ -1,0 +1,65 @@
+(ns clojure-noob.core
+  (:gen-class))
+
+
+
+(defn nazwa [miasto] (nth miasto 0))
+(defn lon [miasto] (nth miasto 1))
+(defn lat [miasto] (nth miasto 2))
+(defn odleglosc [miasto1 miasto2] (+ (* (- (lon miasto2) (lon  miasto1)) (- (lon miasto2) (lon  miasto1))) (* (- (lat miasto2) (lat miasto1)) (- (lat miasto2) (lat miasto1)))))
+(defn lmieszk [miasto] (nth miasto 3))
+
+(def miasto ["a" 1 1 10])
+(def miasta (list ["a" 1 1 10] ["b" 4 1 10] ["c" 3 5 10] ["d" 2 2 10]))
+
+(defn sumamieszk [listamiast] (if (= () listamiast) 0 (+ (nth (first listamiast) 3) (sumamieszk (rest listamiast)))))
+
+;; filtruje listemiast wzgledem miasta zadanego czy sa wieksze niz dany promien, tworzy liste (miasto x y lmieszk odlegloscod zadanego miasta)
+
+
+(defn filtrujeodl [listamiast miasto r acc]
+  (if (= () listamiast) acc
+      (let[odlegloscmiast (odleglosc  miasto (first listamiast)) m (first listamiast)]
+           (if
+          (> odlegloscmiast r)
+        (filtrujeodl (rest listamiast) miasto r acc)
+        (filtrujeodl (rest listamiast) miasto r (cons [(nth m 0) (nth m 1) (nth m 2) (nth m 3) odlegloscmiast]  acc))))))
+
+(defn filtrbyr [lista miasto r] (filtrujeodl lista miasto r ()))
+
+
+;;(defn filtrujepoodl [listamiast miasto r] (filter (fn [x] (< (odleglosc  miasto x) r)) listamiast))
+
+(defn odl [miasto] (nth miasto 4))
+(defn sortbyodl [lista] (sort-by odl lista))
+
+
+(defn main [listamiast r accmain granica]
+  (if (= () listamiast)
+    accmain
+    (let [miasto (first listamiast)]
+      (let [filteredbyr (filtrbyr listamiast miasto r)]
+        (if (< (sumamieszk filteredbyr) granica)
+          (main (rest listamiast) r accmain granica)
+          (let [sortedbyodl (sortbyodl filteredbyr)]
+            (letfn [(aux [lista suma acc]
+                         (if (= () lista) accmain
+                        (let [m (first lista)]
+                          (if (> (+ (lmieszk m) suma) granica)
+                            (main (rest listamiast) (odl m) (cons m acc) granica)
+                            (aux (rest lista) (+ (lmieszk m) suma) (cons m acc))))))]
+
+              (aux sortedbyodl 0 ())
+              )))))))
+
+(defn promien [listamiast]
+  (main listamiast 1000000 () (quot (sumamieszk listamiast) 2)))
+
+
+
+(promien miasta)
+
+(def miasta2 (list ["A" 1 1 10] ["B" 2 2 10] ["C" 2 6 10] ["D" 4 4 10] ["E" 5 8 10] ["F" 7 3 10] ["G" 6 1 10] ["H" 10 1 10] ["I" 9 6 10] ["J" 5 6 10]))
+(promien miasta2)
+
+(promien (list ["A" 1 1 10] ["B" 4 1 10] ["C" 7 1 10] ["D" 5 6 10] ["E" 6 7 10] ["F" 7 6 10] ["G" 6 5 10]))
