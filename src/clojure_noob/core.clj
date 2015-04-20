@@ -34,26 +34,27 @@
 (defn sortbyodl [lista] (sort-by odl lista))
 
 
-(defn main [listamiast r accmain granica]
+(defn main [listamiast miastawszystkie r accmain granica]
   (if (= () listamiast)
     accmain
     (let [miasto (first listamiast)]
-      (let [filteredbyr (filtrbyr listamiast miasto r)]
-        (if (< (sumamieszk filteredbyr) granica)
-          (main (rest listamiast) r accmain granica)
+      (let [filteredbyr (filtrbyr miastawszystkie miasto r)]
+        (if (<= (sumamieszk filteredbyr) granica)
+          (main (rest listamiast) miastawszystkie r accmain granica)
           (let [sortedbyodl (sortbyodl filteredbyr)]
             (letfn [(aux [lista suma acc]
-                         (if (= () lista) accmain
+                         (if (= () lista)
+                          (main (rest listamiast) miastawszystkie r accmain granica)
                         (let [m (first lista)]
                           (if (> (+ (lmieszk m) suma) granica)
-                            (main (rest listamiast) (odl m) (cons m acc) granica)
+                            (main (rest listamiast) miastawszystkie (odl m) (cons m acc) granica)
                             (aux (rest lista) (+ (lmieszk m) suma) (cons m acc))))))]
 
               (aux sortedbyodl 0 ())
               )))))))
 
 (defn promien [listamiast]
-  (main listamiast 10000000 () (quot (sumamieszk listamiast) 2)))
+  (main listamiast listamiast 10000000 () (quot (sumamieszk listamiast) 2)))
 
 
 
