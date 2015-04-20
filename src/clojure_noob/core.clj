@@ -41,21 +41,18 @@
       (let [filteredbyr (filtrbyr miastawszystkie miasto r)]
         (if (<= (sumamieszk filteredbyr) granica)
           (main (rest listamiast) miastawszystkie r accmain granica)
-          (let [sortedbyodl (sortbyodl filteredbyr)]
-            (letfn [(aux [lista suma acc]
-                         (if (= () lista)
-                          (main (rest listamiast) miastawszystkie r accmain granica)
-                        (let [m (first lista)]
-                          (if (> (+ (lmieszk m) suma) granica)
+            (let [sortedbyodl (sortbyodl filteredbyr)]
+              (letfn [(aux [lista suma acc]
+                           (let [m (first lista)]
+                             (if (> (+ (lmieszk m) suma) granica)
                             (main (rest listamiast) miastawszystkie (odl m) (cons m acc) granica)
-                            (aux (rest lista) (+ (lmieszk m) suma) (cons m acc))))))]
+                            (aux (rest lista) (+ (lmieszk m) suma) (cons m acc)))))]
 
               (aux sortedbyodl 0 ())
               )))))))
 
 (defn promien [listamiast]
   (main listamiast listamiast 10000000 () (quot (sumamieszk listamiast) 2)))
-
 
 
 (promien miasta)
